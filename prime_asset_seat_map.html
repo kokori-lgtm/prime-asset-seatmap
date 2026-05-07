@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRIME ASSET — 5월 10일 출발팀 좌석배정표</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Courier New',Consolas,monospace;background:#f4f3ef;color:#1a1a1a;min-height:100vh;padding:24px 0}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.hdr{padding-bottom:14px;border-bottom:2px solid #1a1a1a;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
+.hdr h1{font-size:14px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#444}
+.hdr .sub{font-size:11px;color:#999;margin-top:3px}
+.hdr .ts{font-size:10px;color:#bbb;text-align:right;line-height:1.6}
+/* FLIGHT TABS */
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer;font-size:12px;font-family:inherit;line-height:1.4;transition:all .12s}
+.tab:hover{border-color:#555;background:#f8f8f8}
+.tab.on{border:2px solid #1a1a1a;background:#1a1a1a;color:#fff;font-weight:700}
+.tab .sub2{font-size:10px;opacity:0.65;font-weight:400;margin-top:1px}
+/* FLIGHT INFO BAR */
+.flight-bar{background:#fff;border:1px solid #ddd;border-radius:8px;padding:12px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.flight-bar .fnum{font-size:26px;font-weight:700;letter-spacing:0.06em;line-height:1}
+.flight-bar .fmeta{font-size:12px;color:#666;margin-top:4px;letter-spacing:0.02em}
+.flight-bar .seat-hover{font-size:13px;font-weight:600;text-align:right;min-width:240px;color:#333}
+/* CABIN + SEARCH ROW */
+.ctrl{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.cab-tog{display:flex;border:2px solid #1a1a1a;border-radius:7px;overflow:hidden;flex-shrink:0}
+.cab-btn{padding:10px 22px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#fff;border:none;letter-spacing:0.04em;color:#666;transition:all .12s}
+.cab-btn.on{background:#1a1a1a;color:#fff}
+.search-wrap{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #1a1a1a;border-radius:7px;padding:0 14px}
+.search-wrap label{font-size:12px;font-weight:700;color:#999;white-space:nowrap;letter-spacing:0.06em;text-transform:uppercase;border-right:1px solid #eee;padding-right:12px;margin-right:2px}
+.search-wrap input{flex:1;border:none;outline:none;font-size:13px;font-family:inherit;padding:10px 0;background:transparent;color:#1a1a1a}
+.search-wrap input::placeholder{color:#bbb}
+#sct{font-size:11px;color:#999;white-space:nowrap}
+/* LEGEND */
+.leg{display:flex;gap:16px;margin-bottom:10px;font-size:11px;color:#666;flex-wrap:wrap;align-items:center}
+.ld{width:12px;height:12px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:4px}
+/* GRID */
+.gc{overflow-x:auto;padding-bottom:8px}
+/* STATS — compact */
+.stats-bar{margin-top:12px;margin-bottom:8px;font-size:11px;color:#aaa;letter-spacing:0.03em;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.stats-bar .sv{font-weight:700;font-size:12px}
+/* WARN */
+.warn{padding:10px 14px;background:#fffbf0;border:1px solid #e8a000;border-radius:6px;font-size:11px;color:#7a5000;line-height:1.7;margin-top:10px}
+#tooltip{position:fixed;background:rgba(18,18,18,.93);color:#fff;padding:6px 12px;border-radius:5px;font-size:12px;font-family:'Courier New',monospace;pointer-events:none;display:none;white-space:nowrap;z-index:9999}
+footer{margin-top:28px;padding-top:10px;border-top:1px solid #ddd;font-size:10px;color:#ccc;text-align:center;letter-spacing:0.05em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div>
+      <h1>Prime Asset — Seat Assignment Map</h1>
+      <div class="sub">1차팀 5월 10일 출발, 148명</div>
+    </div>
+
+  </div>
+
+  <div id="tabs" class="tabs"></div>
+
+  <div class="flight-bar">
+    <div>
+      <div id="fnum" style="font-size:11px;font-weight:700;color:#aaa;letter-spacing:0.12em;margin-bottom:6px;"></div>
+      <div id="froute" style="font-size:24px;font-weight:700;letter-spacing:0.02em;line-height:1;"></div>
+      <div id="fmeta" style="font-size:12px;color:#777;margin-top:8px;letter-spacing:0.02em;"></div>
+    </div>
+    <div class="seat-hover" id="sh"></div>
+  </div>
+
+  <div class="ctrl">
+    <div class="cab-tog">
+      <button class="cab-btn on" id="btn-eco" onclick="setCab('eco')">이코노미</button>
+      <button class="cab-btn" id="btn-biz" onclick="setCab('biz')">비즈니스</button>
+    </div>
+    <div class="search-wrap">
+      <label>승객 검색</label>
+      <input id="srch" type="text" placeholder="이름 입력  예: PARK · KIM · LIM">
+      <span id="sct"></span>
+    </div>
+  </div>
+
+  <div id="leg-area" class="leg"></div>
+  <div id="gc" class="gc"></div>
+  <div id="stats" class="stats-bar"></div>
+  <div id="note" class="warn" style="display:none;"></div>
+  <footer>PRIME ASSET · GuideLive Operations · Confidential · 1차팀 5월 10일 출발</footer>
+</div>
+<div id="tooltip"></div>
+<script>
+const PC={
+  E:{bg:'#b5d4f4',bd:'#378add',tx:'#0c447c'},
+  Q:{bg:'#fac775',bd:'#ba7517',tx:'#633806'},
+  B1:{bg:'#e0e7ff',bd:'#4f46e5',tx:'#1e1b4b'},
+  B2:{bg:'#fae8ff',bd:'#9333ea',tx:'#4a044e'}
+};
+const PNL={E:'EXPEMM',Q:'EXQRJY',B1:'비즈니스 PNR-1',B2:'비즈니스 PNR-2'};
+
+const FD={
+SQ605:{lb:'SQ605',sub:'인천 → 싱가폴',dt:'2026년 5월 10일',dep:'23:50',arr:'05:00 (5월 11일)',
+  warnEco:null,warnBiz:'비즈니스 PNR-2: JO/EUNSIG (17F) 1석만 배정, 나머지 8명 미배정.',s:{
+"52A":["KIM/JAESOOK","Q"],"52B":["KIM/KWANGMOON","Q"],"52C":["SUNG/EUNA","Q"],"52D":["JEON/SOJUNG","Q"],"52E":["KIM/HYUNJIN","Q"],
+"53A":["PARK/BORA","Q"],"53B":["MIN/GUNWOO","Q"],"53C":["MIN/WOOKYUNG","Q"],"53D":["CHOI/SUIM","Q"],"53E":["PARK/CHANYUL","Q"],"53G":["PARK/CHANHYEOK","Q"],"53H":["PARK/JUSUK","Q"],"53J":["JEUNG/YOUNGCHAN","Q"],"53K":["CHO/OKBOON","Q"],
+"54A":["LEE/JEWOON","Q"],"54B":["SONG/JIHYE","Q"],"54C":["SEO/EUNYOUNG","Q"],"54D":["SEONG/JIHYEON","Q"],"54E":["YEO/GAEUL","Q"],"54G":["CHO/HYEONJOON","Q"],"54H":["YANG/HYEONA","Q"],"54J":["KWON/JUYOUNG","Q"],"54K":["JUNG/JIEUN","Q"],
+"56B":["LEE/YEONGGUK","Q"],"56C":["LEE/EUNJI","Q"],"56D":["CHANG/SORA","Q"],"56E":["SEO/JUNMIN","Q"],"56G":["SEO/TAEUNG","Q"],"56H":["MIN/JANGWOON","Q"],"56J":["MIN/JANGHYUN","Q"],
+"57A":["KIM/KWONIL","Q"],"57B":["KANG/HYUNGOO","Q"],"57C":["KIM/TAEYOON","Q"],"57D":["KWAG/EUNYOUNG","Q"],"57E":["HONG/SEOHYUN","Q"],"57G":["LEE/KYEONGHWA","Q"],"57H":["GO/DUHYEONG","Q"],"57J":["BAE/GUNA","Q"],"57K":["BAE/MINWOO","Q"],
+"58A":["CHOI/KIYOUNG","Q"],"58B":["AN/JAEWOO","Q"],"58C":["LEE/YONGHUN","Q"],"58D":["YI/YONGJOON","Q"],"58E":["YANG/HYUNMI","Q"],"58G":["PARK/EUNA","Q"],"58H":["HWANG/JINYOUNG","Q"],"58J":["KO/SEUNGWAN","Q"],"58K":["CHOI/CHULHO","Q"],
+"68C":["LEE/JIHYE","Q"],"68D":["PARK/JUYOUNG","Q"],"68E":["LEE/HYOUNJU","Q"],"68G":["KIM/KOONHWAN","Q"],
+"69B":["JUN/GIBEOM","Q"],"69C":["KIM/INSIK","Q"],"69D":["KIM/MINJEONG","Q"],"69E":["SONG/TAESEON","Q"],"69G":["KIM/YONGDAE","Q"],"69H":["KIM/JAEJUNG","Q"],"69J":["KIM/JIYOON","Q"],"69K":["KIM/HYUNJUNG","Q"],
+"59A":["PARK/NANYOUNG","E"],"59B":["JANG/HANEUL","E"],"59C":["JANG/SUNGMIN","E"],"59D":["HAHM/BAEJIN","E"],"59E":["HAHM/SEOYUL","E"],"59G":["PAIK/BOKYOUNG","E"],"59H":["PARK/GWUIHWAN","E"],"59J":["JEONG/SEUNGSUN","E"],"59K":["PARK/WOOBIN","E"],
+"60A":["KIM/YOUNGHYUN","E"],"60B":["KIM/JIYUL","E"],"60C":["KIM/JIWOO","E"],"60D":["KU/YOUNGIN","E"],"60E":["LEE/JUNGMI","E"],"60G":["KU/MINJAE","E"],"60H":["PARK/CHEOLHYUN","E"],"60J":["AHN/JIHYEOK","E"],"60K":["AHN/KWANGSOOK","E"],
+"61A":["JANG/JAEYOUNG","E"],"61B":["PARK/YUNA","E"],"61C":["PARK/SUNGJUN","E"],"61D":["YUK/JIHYE","E"],"61E":["YUN/JANGHO","E"],"61G":["AHN/MINJU","E"],"61H":["KIM/JIMIN","E"],"61J":["CHOI/MUNJEONG","E"],"61K":["KIM/AYOON","E"],
+"62A":["SIM/TAEWOOK","E"],"62B":["AN/HYERIN","E"],"62C":["SIM/HAYOON","E"],"62D":["JO/GWANGJIN","E"],"62E":["CHOI/JEONGYUN","E"],"62G":["JO/YIAN","E"],"62H":["LEE/JIHYUK","E"],"62J":["KIM/BORA","E"],"62K":["LEE/RHAON","E"],
+"63A":["HWANG/CHEOLHA","E"],"63B":["KIM/EUNYOUNG","E"],"63C":["LEE/HEEWON","E"],"63D":["CHO/BOMI","E"],"63E":["LEE/CHUNSIK","E"],"63G":["CHOI/KYOUNGYOUN","E"],"63H":["JANG/DEOKHWAN","E"],"63J":["JANG/HEUNGRAK","E"],"63K":["LEE/SEONOK","E"],
+"64A":["KIM/JISU","E"],"64B":["LEE/EUNHEE","E"],"64C":["KANG/HOJIN","E"],"64D":["HONG/GAYEONG","E"],"64E":["SON/HYUNHO","E"],"64G":["KIM/YOUNGKYU","E"],"64H":["MUN/HYUKJIN","E"],"64J":["LIM/SEUNGJIN","E"],"64K":["KIM/BOHEE","E"],
+"65A":["KWON/SOONWOOK","E"],"65B":["PARK/SEEUN","E"],"65C":["KWON/YUL","E"],"65D":["EOM/YEONOK","E"],"65E":["KIM/USEOK","E"],"65G":["LEE/SUHAN","E"],"65H":["JEON/KOOKJIN","E"],"65J":["KIM/JEACHUL","E"],"65K":["PARK/YOUNGKYUNG","E"],
+"66A":["JO/SEUNGHYEON","E"],"66B":["PARK/GUNWOO","E"],"66C":["SON/GEUNYEONG","E"],"66D":["SON/YIHYUN","E"],"66E":["PARK/YOUNGSEON","E"],"66G":["SON/SEUNGYOU","E"]}},
+SQ432:{lb:'SQ432',sub:'싱가폴 → 말레',dt:'2026년 5월 11일',dep:'10:20',arr:'11:50',
+  warnEco:'EXQRJY 48명 미배정 — 공항 발권 처리 예정.',
+  warnBiz:null,s:{
+"51A":["YANG/HYUNMI","Q"],"51G":["SUNG/EUNA","Q"],"51K":["JUN/GIBEOM","Q"],
+"52D":["JEON/SOJUNG","Q"],"52E":["KIM/HYUNJIN","Q"],
+"60J":["KIM/JAESOOK","Q"],"60K":["KIM/KWANGMOON","Q"],
+"61C":["YANG/HYEONA","Q"],"61D":["CHOI/SUIM","Q"],"61E":["PARK/CHANYUL","Q"],"61G":["PARK/CHANHYEOK","Q"],"61H":["PARK/JUSUK","Q"],
+"52A":["PARK/NANYOUNG","E"],"52B":["JANG/HANEUL","E"],"52C":["JANG/SUNGMIN","E"],
+"53A":["HAHM/BAEJIN","E"],"53B":["HAHM/SEOYUL","E"],"53C":["PAIK/BOKYOUNG","E"],"53D":["PARK/GWUIHWAN","E"],"53E":["JEONG/SEUNGSUN","E"],"53G":["PARK/WOOBIN","E"],"53H":["KIM/YOUNGHYUN","E"],"53J":["KIM/JIYUL","E"],"53K":["KIM/JIWOO","E"],
+"54A":["KU/YOUNGIN","E"],"54B":["LEE/JUNGMI","E"],"54C":["KU/MINJAE","E"],"54D":["AHN/JIHYEOK","E"],"54E":["AHN/KWANGSOOK","E"],"54G":["JANG/JAEYOUNG","E"],"54H":["PARK/YUNA","E"],"54J":["PARK/SUNGJUN","E"],"54K":["YUK/JIHYE","E"],
+"55A":["KIM/JIMIN","E"],"55B":["CHOI/MUNJEONG","E"],"55C":["KIM/AYOON","E"],"55D":["SIM/TAEWOOK","E"],"55E":["AN/HYERIN","E"],"55G":["SIM/HAYOON","E"],"55H":["PARK/CHEOLHYUN","E"],"55J":["YUN/JANGHO","E"],"55K":["AHN/MINJU","E"],
+"56A":["JO/GWANGJIN","E"],"56B":["CHOI/JEONGYUN","E"],"56C":["JO/YIAN","E"],"56D":["LEE/JIHYUK","E"],"56E":["KIM/BORA","E"],"56G":["LEE/RHAON","E"],"56H":["MUN/HYUKJIN","E"],"56J":["HWANG/CHEOLHA","E"],"56K":["KIM/EUNYOUNG","E"],
+"57C":["SON/GEUNYEONG","E"],"57D":["SON/YIHYUN","E"],"57E":["PARK/YOUNGSEON","E"],"57G":["SON/SEUNGYOU","E"],"57H":["JANG/DEOKHWAN","E"],"57J":["JANG/HEUNGRAK","E"],"57K":["LEE/SEONOK","E"],
+"58C":["LEE/HEEWON","E"],"58D":["CHO/BOMI","E"],"58E":["LEE/CHUNSIK","E"],"58G":["CHOI/KYOUNGYOUN","E"],"58H":["KWON/SOONWOOK","E"],"58J":["PARK/SEEUN","E"],"58K":["KWON/YUL","E"],
+"59A":["KIM/JISU","E"],"59B":["LEE/EUNHEE","E"],"59C":["KANG/HOJIN","E"],"59D":["HONG/GAYEONG","E"],"59E":["SON/HYUNHO","E"],"59G":["KIM/YOUNGKYU","E"],"59H":["KIM/JEACHUL","E"],"59J":["LIM/SEUNGJIN","E"],"59K":["KIM/BOHEE","E"],
+"60A":["JO/SEUNGHYEON","E"],"60B":["PARK/GUNWOO","E"],"60C":["EOM/YEONOK","E"],"60D":["KIM/USEOK","E"],"60E":["LEE/SUHAN","E"],"60G":["JEON/KOOKJIN","E"],"60H":["PARK/YOUNGKYUNG","E"]}},
+SQ431:{lb:'SQ431',sub:'말레 → 싱가폴',dt:'2026년 5월 16일',dep:'13:05',arr:'21:05',
+  warnEco:'EXPEMM 41석 미배정 — MLE 현지 발권 처리 예정. EXQRJY 전원(60석) 배정 완료.',
+  warnBiz:null,s:{
+"51C":["SON/GEUNYEONG","E"],"51D":["SON/YIHYUN","E"],"51E":["PARK/YOUNGSEON","E"],"51G":["SON/SEUNGYOU","E"],"51J":["JANG/JAEYOUNG","E"],"51K":["PARK/YUNA","E"],
+"52E":["PAIK/BOKYOUNG","E"],"52G":["HAHM/SEOYUL","E"],"52H":["HAHM/BAEJIN","E"],
+"53A":["PARK/SUNGJUN","E"],"53B":["YUK/JIHYE","E"],"53E":["AHN/JIHYEOK","E"],"53G":["AHN/KWANGSOOK","E"],"53H":["SIM/TAEWOOK","E"],"53J":["AN/HYERIN","E"],"53K":["SIM/HAYOON","E"],
+"54A":["PARK/GWUIHWAN","E"],"54B":["JEONG/SEUNGSUN","E"],"54C":["PARK/WOOBIN","E"],"54D":["KU/YOUNGIN","E"],"54E":["LEE/JUNGMI","E"],"54G":["KU/MINJAE","E"],"54H":["KIM/JIMIN","E"],"54J":["CHOI/MUNJEONG","E"],"54K":["KIM/AYOON","E"],
+"56K":["PARK/CHEOLHYUN","E"],
+"62D":["YUN/JANGHO","E"],"62E":["AHN/MINJU","E"],
+"55A":["JEON/SOJUNG","Q"],"55B":["KIM/HYUNJIN","Q"],"55C":["SUNG/EUNA","Q"],"55D":["PARK/BORA","Q"],"55E":["MIN/GUNWOO","Q"],"55G":["MIN/WOOKYUNG","Q"],"55H":["CHANG/SORA","Q"],"55J":["SEO/JUNMIN","Q"],"55K":["SEO/TAEUNG","Q"],
+"56A":["KIM/JAESOOK","Q"],"56B":["KIM/KWANGMOON","Q"],"56C":["CHOI/SUIM","Q"],"56D":["PARK/CHANYUL","Q"],"56E":["PARK/CHANHYEOK","Q"],"56G":["PARK/JUSUK","Q"],
+"57A":["JEUNG/YOUNGCHAN","Q"],"57B":["CHO/OKBOON","Q"],"57C":["YANG/HYUNMI","Q"],"57D":["LEE/JEWOON","Q"],"57E":["SONG/JIHYE","Q"],"57G":["LEE/HYOUNJU","Q"],"57H":["KIM/KOONHWAN","Q"],"57J":["LEE/YEONGGUK","Q"],"57K":["LEE/EUNJI","Q"],
+"58A":["MIN/JANGWOON","Q"],"58B":["MIN/JANGHYUN","Q"],"58C":["KWON/JUYOUNG","Q"],"58D":["JUNG/JIEUN","Q"],"58E":["KWAG/EUNYOUNG","Q"],"58G":["HONG/SEOHYUN","Q"],"58H":["KIM/KWONIL","Q"],"58J":["KANG/HYUNGOO","Q"],"58K":["KIM/TAEYOON","Q"],
+"59A":["BAE/GUNA","Q"],"59B":["BAE/MINWOO","Q"],"59C":["SEO/EUNYOUNG","Q"],"59D":["SEONG/JIHYEON","Q"],"59E":["YEO/GAEUL","Q"],"59G":["CHO/HYEONJOON","Q"],"59H":["YANG/HYEONA","Q"],"59J":["CHOI/KIYOUNG","Q"],"59K":["AN/JAEWOO","Q"],
+"60A":["LEE/KYEONGHWA","Q"],"60B":["GO/DUHYEONG","Q"],"60C":["LEE/YONGHUN","Q"],"60D":["YI/YONGJOON","Q"],"60E":["PARK/EUNA","Q"],"60G":["HWANG/JINYOUNG","Q"],"60H":["KO/SEUNGWAN","Q"],"60J":["CHOI/CHULHO","Q"],"60K":["JUN/GIBEOM","Q"],
+"61A":["LEE/JIHYE","Q"],"61B":["PARK/JUYOUNG","Q"],"61C":["KIM/INSIK","Q"],"61D":["KIM/MINJEONG","Q"],"61E":["SONG/TAESEON","Q"],"61G":["KIM/YONGDAE","Q"],"61H":["KIM/JAEJUNG","Q"],"61J":["KIM/JIYOON","Q"],"61K":["KIM/HYUNJUNG","Q"]}},
+SQ608:{lb:'SQ608',sub:'싱가폴 → 인천',dt:'2026년 5월 17일',dep:'00:20',arr:'07:45',
+  warnEco:'공항 재확인 필요.',
+  warnBiz:null,s:{
+"55D":["SUNG/EUNA","Q"],
+"55E":["AHN/JIHYEOK","E"],"55G":["AHN/KWANGSOOK","E"],"55H":["PARK/NANYOUNG","E"],"55J":["JANG/HANEUL","E"],"55K":["JANG/SUNGMIN","E"],
+"59A":["JEON/SOJUNG","Q"],"59B":["KIM/HYUNJIN","Q"],"59C":["PARK/CHEOLHYUN","E"],
+"60A":["KIM/JAESOOK","Q"],"60B":["KIM/KWANGMOON","Q"],"60C":["JUN/GIBEOM","Q"],"60D":["PARK/BORA","Q"],"60E":["MIN/GUNWOO","Q"],"60G":["MIN/WOOKYUNG","Q"],"60H":["YANG/HYUNMI","Q"],"60J":["JEUNG/YOUNGCHAN","Q"],"60K":["CHO/OKBOON","Q"],
+"61A":["LEE/JEWOON","Q"],"61B":["SONG/JIHYE","Q"],"61C":["CHOI/SUIM","Q"],"61D":["PARK/CHANYUL","Q"],"61E":["PARK/CHANHYEOK","Q"],"61G":["PARK/JUSUK","Q"],"61H":["CHANG/SORA","Q"],"61J":["SEO/JUNMIN","Q"],"61K":["SEO/TAEUNG","Q"],
+"62A":["LEE/YEONGGUK","Q"],"62B":["LEE/EUNJI","Q"],"62C":["SEO/EUNYOUNG","Q"],"62D":["SEONG/JIHYEON","Q"],"62E":["YEO/GAEUL","Q"],"62G":["CHO/HYEONJOON","Q"],"62H":["YANG/HYEONA","Q"],"62J":["MIN/JANGWOON","Q"],"62K":["MIN/JANGHYUN","Q"],
+"63A":["KWON/JUYOUNG","Q"],"63B":["JUNG/JIEUN","Q"],"63C":["KWAG/EUNYOUNG","Q"],"63D":["HONG/SEOHYUN","Q"],"63E":["LEE/KYEONGHWA","Q"],"63G":["GO/DUHYEONG","Q"],"63H":["KIM/KWONIL","Q"],"63J":["KANG/HYUNGOO","Q"],"63K":["KIM/TAEYOON","Q"],
+"64A":["BAE/GUNA","Q"],"64B":["BAE/MINWOO","Q"],"64C":["LEE/HYOUNJU","Q"],"64D":["KIM/KOONHWAN","Q"],"64E":["LEE/YONGHUN","Q"],"64G":["YI/YONGJOON","Q"],"64H":["PARK/EUNA","Q"],"64J":["CHOI/KIYOUNG","Q"],"64K":["AN/JAEWOO","Q"],
+"65A":["KIM/INSIK","Q"],"65B":["KIM/MINJEONG","Q"],"65C":["SONG/TAESEON","Q"],"65D":["KIM/YONGDAE","Q"],"65E":["LEE/JIHYE","Q"],"65G":["PARK/JUYOUNG","Q"],"65H":["HWANG/JINYOUNG","Q"],"65J":["KO/SEUNGWAN","Q"],"65K":["CHOI/CHULHO","Q"],
+"66A":["KIM/JAEJUNG","Q"],"66B":["KIM/JIYOON","Q"],"66C":["KIM/HYUNJUNG","Q"],
+"66H":["KWON/SOONWOOK","E"],"66J":["PARK/SEEUN","E"],"66K":["KWON/YUL","E"],
+"67A":["LEE/SUHAN","E"],"67B":["JEON/KOOKJIN","E"],"67C":["KIM/JEACHUL","E"],"67D":["PARK/YOUNGKYUNG","E"],"67E":["JANG/JAEYOUNG","E"],"67G":["PARK/YUNA","E"],"67H":["HAHM/BAEJIN","E"],"67J":["HAHM/SEOYUL","E"],"67K":["PAIK/BOKYOUNG","E"],
+"68A":["PARK/GWUIHWAN","E"],"68B":["JEONG/SEUNGSUN","E"],"68C":["PARK/WOOBIN","E"],"68D":["KIM/YOUNGHYUN","E"],"68E":["KIM/JIYUL","E"],"68G":["KIM/JIWOO","E"],"68H":["KU/YOUNGIN","E"],"68J":["LEE/JUNGMI","E"],"68K":["KU/MINJAE","E"],
+"69A":["PARK/SUNGJUN","E"],"69B":["YUK/JIHYE","E"],"69C":["SON/GEUNYEONG","E"],"69D":["SON/YIHYUN","E"],"69E":["PARK/YOUNGSEON","E"],"69G":["SON/SEUNGYOU","E"],"69H":["KIM/JIMIN","E"],"69J":["CHOI/MUNJEONG","E"],"69K":["KIM/AYOON","E"],
+"70A":["SIM/TAEWOOK","E"],"70B":["AN/HYERIN","E"],"70C":["SIM/HAYOON","E"],"70D":["LEE/JIHYUK","E"],"70E":["KIM/BORA","E"],"70G":["LEE/RHAON","E"],"70H":["JO/GWANGJIN","E"],"70J":["CHOI/JEONGYUN","E"],"70K":["JO/YIAN","E"],
+"71A":["YUN/JANGHO","E"],"71B":["AHN/MINJU","E"],"71C":["HWANG/CHEOLHA","E"],"71D":["KIM/EUNYOUNG","E"],"71E":["LEE/HEEWON","E"],"71G":["CHO/BOMI","E"],"71H":["JANG/DEOKHWAN","E"],"71J":["JANG/HEUNGRAK","E"],"71K":["LEE/SEONOK","E"],
+"72A":["LEE/CHUNSIK","E"],"72B":["CHOI/KYOUNGYOUN","E"],"72C":["KIM/JISU","E"],"72D":["LEE/EUNHEE","E"],"72E":["KANG/HOJIN","E"],"72G":["HONG/GAYEONG","E"],"72H":["MUN/HYUKJIN","E"],"72J":["SON/HYUNHO","E"],"72K":["KIM/YOUNGKYU","E"],
+"73A":["LIM/SEUNGJIN","E"],"73B":["KIM/BOHEE","E"],"73C":["JO/SEUNGHYEON","E"],"73D":["PARK/GUNWOO","E"],"73E":["EOM/YEONOK","E"],"73G":["KIM/USEOK","E"]}}
+};
+
+const BD={
+SQ605:{
+  "12D":["LIM/JUNGWOON","B1"],"12F":["CHO/YOUNGSUK","B1"],
+  "14D":["PARK/SINYOUNG","B1"],"14F":["PARK/JINHO","B1"],
+  "15D":["JO/JAEJUNG","B1"],"15F":["KIM/SEHUI","B1"],
+  "16A":["HEO/JEONGWON","B1"],"16D":["CHOI/SEONGWON","B1"],"16F":["LEE/SOOJUNG","B1"],
+  "17D":["KIM/HWANJONG","B1"],
+  "17F":["JO/EUNSIG","B2"]},
+SQ432:{
+  "12A":["JO/JAEJUNG","B1"],"12D":["LIM/JUNGWOON","B1"],"12F":["CHO/YOUNGSUK","B1"],
+  "14A":["KIM/SEHUI","B1"],"14D":["PARK/JINHO","B1"],"14F":["PARK/SINYOUNG","B1"],
+  "15A":["CHOI/SEONGWON","B1"],"15D":["LEE/SOOJUNG","B1"],
+  "15F":["JO/EUNSIG","B2"],"15K":["KIM/HWANJONG","B1"],
+  "16A":["KO/DAEYEONG","B2"],
+  "17A":["YANG/DAEHAN","B2"],
+  "18D":["OH/YONGHA","B2"],"18F":["KIM/JIHEE","B2"],
+  "20K":["HEO/MIKYUNG","B2"],"21K":["KIM/YONGGWAN","B2"],
+  "22D":["KIM/DOHYEON","B2"],"22F":["LEE/JIMIN","B2"],"22A":["HEO/JEONGWON","B1"]},
+SQ431:{
+  "12D":["HEO/JEONGWON","B1"],"12K":["LIM/JUNGWOON","B1"],
+  "14K":["CHO/YOUNGSUK","B1"],
+  "15D":["PARK/JINHO","B1"],"15F":["PARK/SINYOUNG","B1"],
+  "16A":["CHOI/SEONGWON","B1"],"16D":["JO/JAEJUNG","B1"],"16F":["KIM/SEHUI","B1"],
+  "17A":["LEE/SOOJUNG","B1"],"17D":["KIM/HWANJONG","B1"],
+  "17F":["JO/EUNSIG","B2"],
+  "18D":["KIM/DOHYEON","B2"],"18F":["LEE/JIMIN","B2"],
+  "20K":["OH/YONGHA","B2"],"21K":["KIM/JIHEE","B2"],
+  "22A":["HEO/MIKYUNG","B2"],"22D":["KIM/YONGGWAN","B2"],"22F":["KO/DAEYEONG","B2"],"22K":["YANG/DAEHAN","B2"]},
+SQ608:{
+  "12D":["LIM/JUNGWOON","B1"],"12F":["CHO/YOUNGSUK","B1"],"12K":["PARK/JINHO","B1"],
+  "14K":["PARK/SINYOUNG","B1"],
+  "15D":["JO/JAEJUNG","B1"],"15F":["KIM/SEHUI","B1"],"15K":["KIM/HWANJONG","B1"],
+  "16D":["CHOI/SEONGWON","B1"],"16F":["LEE/SOOJUNG","B1"],
+  "16K":["JO/EUNSIG","B2"],
+  "17D":["OH/YONGHA","B2"],"17F":["KIM/JIHEE","B2"],
+  "18A":["KIM/DOHYEON","B2"],"18D":["HEO/MIKYUNG","B2"],"18F":["KIM/YONGGWAN","B2"],
+  "19A":["LEE/JIMIN","B2"],"19D":["KO/DAEYEONG","B2"],"19F":["YANG/DAEHAN","B2"],
+  "20A":["HEO/JEONGWON","B1"]}
+};
+
+let cur='SQ605',q='',cab='eco';
+const tt=document.getElementById('tooltip');
+
+
+function getRows(s){
+  const rs=Object.keys(s).map(k=>parseInt(k));
+  if(!rs.length)return[];
+  const mn=Math.min(...rs),mx=Math.max(...rs);
+  return Array.from({length:mx-mn+1},(_,i)=>mn+i).filter(r=>r!==13);
+}
+
+function makeSeat(key,seat,q,mk,W,H,G){
+  const isM=q&&mk.includes(key);
+  let bg,bd,tx,op='1';
+  if(seat){const cv=PC[seat[1]];if(q){if(isM){bg=cv.bg;bd=cv.bd;tx=cv.tx;}else{bg='#f0f0f0';bd='#e0e0e0';tx='#ccc';op='0.28';}}else{bg=cv.bg;bd=cv.bd;tx=cv.tx;}}
+  else{bg='#f0f0ee';bd='#ddd';tx='#bbb';}
+  const pts=seat?seat[0].split('/'):[null,null];
+  const ttx=seat?key+': '+seat[0]+' · '+PNL[seat[1]]:key+': 미배정';
+  let h='<div style="width:'+W+'px;height:'+H+'px;border-radius:4px;background:'+bg+';border:1.5px solid '+bd+';display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;margin-right:'+G+'px;opacity:'+op+';flex-shrink:0;cursor:'+(seat?'pointer':'default')+';padding:2px 3px;" onmouseenter="showT(\''+ttx+'\')" onmouseleave="hideT()">';
+  if(seat){h+='<div style="font-size:10px;font-weight:700;color:'+tx+';line-height:1.25;text-align:center;">'+(pts[0]||'')+'</div><div style="font-size:9px;color:'+tx+';opacity:0.82;line-height:1.2;margin-top:1px;text-align:center;">'+(pts[1]||'')+'</div>';}
+  h+='</div>';
+  return h;
+}
+
+function buildGrid(seats,cols,nullW,W,H,G,RL){
+  const rows=getRows(seats);
+  const qu=q.toUpperCase();const mk=q?Object.keys(seats).filter(k=>seats[k][0].includes(qu)):[];
+  document.getElementById('sct').textContent=q?mk.length+'석 매칭':'';
+  let h='<div style="display:inline-block;min-width:100%;">';
+  h+='<div style="display:flex;align-items:center;margin-bottom:6px;padding-left:'+(RL+G)+'px;">';
+  cols.forEach(c=>{
+    if(!c)h+='<div style="width:'+nullW+'px;flex-shrink:0;"></div>';
+    else h+='<div style="width:'+W+'px;text-align:center;font-size:13px;font-weight:700;color:#555;margin-right:'+G+'px;flex-shrink:0;letter-spacing:0.1em;">'+c+'</div>';
+  });
+  h+='</div>';
+  rows.forEach(row=>{
+    h+='<div style="display:flex;align-items:center;margin-bottom:'+G+'px;">';
+    h+='<div style="width:'+RL+'px;font-size:13px;font-weight:700;color:#777;text-align:right;padding-right:8px;flex-shrink:0;">'+row+'</div>';
+    cols.forEach(c=>{
+      if(!c){h+='<div style="width:'+nullW+'px;flex-shrink:0;"></div>';return;}
+      h+=makeSeat(row+c,seats[row+c],q,mk,W,H,G);
+    });
+    h+='</div>';
+  });
+  h+='</div>';
+  return{html:h,mk};
+}
+
+function renderEco(){
+  const fl=FD[cur];const seats=fl.s;
+  const note=document.getElementById('note');
+  if(fl.warnEco){note.style.display='block';note.textContent=fl.warnEco;}else{note.style.display='none';}
+  document.getElementById('leg-area').innerHTML=
+    '<span><span class="ld" style="background:#b5d4f4;border:1.5px solid #378add;"></span>EXPEMM</span>'+
+    '<span><span class="ld" style="background:#fac775;border:1.5px solid #ba7517;"></span>EXQRJY</span>'+
+    '<span><span class="ld" style="background:#f0f0ee;border:1px solid #ccc;"></span>미배정</span>';
+  const {html}=buildGrid(seats,['A','B','C',null,'D','E','G',null,'H','J','K'],16,84,46,3,38);
+  document.getElementById('gc').innerHTML=html;
+  const em=Object.values(seats).filter(s=>s[1]==='E').length;
+  const jy=Object.values(seats).filter(s=>s[1]==='Q').length;
+  document.getElementById('stats').innerHTML=
+    '<span class="sv" style="color:#0c447c;">EXPEMM '+em+'석</span>'+
+    '<span style="color:#ddd;">·</span>'+
+    '<span class="sv" style="color:#633806;">EXQRJY '+jy+'석</span>'+
+    '<span style="color:#ddd;">·</span>'+
+    '<span class="sv">합계 '+(em+jy)+'석</span>';
+}
+
+function renderBiz(){
+  const seats=BD[cur];const fl=FD[cur];
+  const note=document.getElementById('note');
+  if(fl.warnBiz){note.style.display='block';note.textContent=fl.warnBiz;}else{note.style.display='none';}
+  document.getElementById('leg-area').innerHTML=
+    '<span><span class="ld" style="background:#e0e7ff;border:1.5px solid #4f46e5;"></span>비즈니스 PNR-1 (10명)</span>'+
+    '<span><span class="ld" style="background:#fae8ff;border:1.5px solid #9333ea;"></span>비즈니스 PNR-2 (9명)</span>'+
+    '<span><span class="ld" style="background:#f0f0ee;border:1px solid #ccc;"></span>미배정</span>'+
+    '<span style="color:#bbb;font-size:10px;">1-2-1 · A | D·F | K</span>';
+  const {html}=buildGrid(seats,['A',null,'D','F',null,'K'],28,100,50,4,38);
+  document.getElementById('gc').innerHTML=html;
+  const b1=Object.values(seats).filter(s=>s[1]==='B1').length;
+  const b2=Object.values(seats).filter(s=>s[1]==='B2').length;
+  const miss=19-b1-b2;
+  document.getElementById('stats').innerHTML=
+    '<span class="sv" style="color:#1e1b4b;">PNR-1 '+b1+'석</span>'+
+    '<span style="color:#ddd;">·</span>'+
+    '<span class="sv" style="color:#4a044e;">PNR-2 '+b2+'석</span>'+
+    '<span style="color:#ddd;">·</span>'+
+    '<span class="sv">합계 '+(b1+b2)+'석</span>'+
+    (miss>0?'<span style="color:#ddd;">·</span><span class="sv" style="color:#c00;">미배정 '+miss+'석</span>':'');
+}
+
+function render(){
+  const fl=FD[cur];
+  document.getElementById('fnum').textContent=fl.lb;
+  document.getElementById('froute').textContent=fl.sub;
+  document.getElementById('fmeta').textContent=fl.dt+' · 출발 '+fl.dep+' → 도착 '+fl.arr+' · A350-900';
+  document.getElementById('sh').textContent='';
+  if(cab==='eco')renderEco();else renderBiz();
+}
+
+function showT(txt){tt.textContent=txt;tt.style.display='block';}
+function hideT(){tt.style.display='none';}
+document.addEventListener('mousemove',e=>{tt.style.left=(e.clientX+14)+'px';tt.style.top=(e.clientY-38)+'px';});
+
+function buildTabs(){
+  document.getElementById('tabs').innerHTML=Object.entries(FD).map(([id,fl])=>{
+    const a=id===cur;
+    return'<button class="tab'+(a?' on':'')+'" onclick="sf(\''+id+'\')">'+'<div>'+fl.lb+'</div><div class="sub2">'+fl.sub+'</div></button>';
+  }).join('');
+}
+
+function sf(id){cur=id;buildTabs();render();}
+function setCab(c){
+  cab=c;
+  document.getElementById('btn-eco').className='cab-btn'+(c==='eco'?' on':'');
+  document.getElementById('btn-biz').className='cab-btn'+(c==='biz'?' on':'');
+  render();
+}
+document.getElementById('srch').addEventListener('input',e=>{q=e.target.value.trim();render();});
+buildTabs();render();
+</script>
+</body>
+</html>
